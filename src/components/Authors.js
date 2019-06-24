@@ -9,8 +9,6 @@ const Authors = (props) => {
   }
   const authors = props.authors.data.allAuthors
 
-  console.log("a", authors)
-
   return (
     <div>
       <h2>authors</h2>
