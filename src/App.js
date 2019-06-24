@@ -26,11 +26,41 @@ const ALL_BOOKS = gql`
 }
 `
 
+const ADD_BOOK = gql`
+mutation addBook($title: String!, $author: String!, $published: Int, $genres: [String]) {
+  addBook(
+    title: $title,
+    author: $author,
+    published: $published,
+    genres: $genres
+  ) {
+    title
+    author
+    published
+    genres
+    id
+  }
+}
+`
+
 const App = () => {
   const [page, setPage] = useState('authors')
 
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
+
+  const [errorMessage, setErrorMessage] = useState(null)
+  const handleError = (error) => {
+    setErrorMessage(error.graphQLErrors[0].message)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 10000)
+  }
+
+  const addBook = useMutation(ADD_BOOK, {
+    onError: handleError,
+    refetchQueries: [{ query: ALL_BOOKS}, {query: ALL_AUTHORS }]
+  })
 
   return (
     <div>
@@ -52,6 +82,8 @@ const App = () => {
 
       <NewBook
         show={page === 'add'}
+        addBook={addBook}
+        errorMessage={errorMessage}
       />
 
     </div>
