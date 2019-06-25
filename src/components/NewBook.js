@@ -16,7 +16,7 @@ const NewBook = props => {
 
     const publishedInt = parseInt(published);
     await props.addBook({
-      variables: { title, author, published: publishedInt, genres }
+      variables: { title, author, publishedInt: published, genres }
     });
 
     setTitle("");

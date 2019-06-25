@@ -1,28 +1,33 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
+import Select from "react-select";
 
-const Authors = (props) => {
-  const [name, setName] = useState("")
-  const [birthyear, setBirthyear] = useState("")
+const Authors = props => {
+  const [birthyear, setBirthyear] = useState("");
+  const [selectedOption, setSelectedOption] = useState(null);
 
   if (!props.show) {
-    return null
+    return null;
   }
   if (props.authors.loading) {
-    return <div>loading...</div>
+    return <div>loading...</div>;
   }
-  const authors = props.authors.data.allAuthors
+  const authors = props.authors.data.allAuthors;
+
+  const options = authors.map(a => {
+    return { value: a.name, label: a.name };
+  });
 
   const submit = async e => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const birthyearInt = parseInt(birthyear)
+    const birthyearInt = parseInt(birthyear);
     await props.editAuthor({
-      variables: { name, setBornTo: birthyearInt }
-    })
+      variables: { name: selectedOption.value, setBornTo: birthyearInt }
+    });
 
-    setName("")
-    setBirthyear("")
-  }
+    setSelectedOption(null);
+    setBirthyear("");
+  };
 
   return (
     <div>
@@ -30,33 +35,27 @@ const Authors = (props) => {
       <table>
         <tbody>
           <tr>
-            <th></th>
-            <th>
-              born
-            </th>
-            <th>
-              books
-            </th>
+            <th />
+            <th>born</th>
+            <th>books</th>
           </tr>
-          {authors.map(a =>
+          {authors.map(a => (
             <tr key={a.name}>
               <td>{a.name}</td>
               <td>{a.born}</td>
               <td>{a.bookCount}</td>
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
 
       <h2>Set birthyear</h2>
       <form onSubmit={submit}>
-        <div>
-          name
-          <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-          />
-        </div>
+        <Select
+          value={selectedOption}
+          onChange={selectedOption => setSelectedOption(selectedOption)}
+          options={options}
+        />
         <div>
           born
           <input
@@ -67,7 +66,7 @@ const Authors = (props) => {
         <button type="submit">update author</button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default Authors
+export default Authors;
